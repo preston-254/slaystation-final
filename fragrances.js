@@ -2,19 +2,29 @@
 if (typeof window !== 'undefined' && typeof window.getHoverImagePaths !== 'function') {
     window.getHoverImagePaths = function(imagePath) {
         if (!imagePath || typeof imagePath !== 'string' || imagePath.indexOf('http') === 0) return [];
-        // "name 1.jpg" -> "name 2.jpg", "name 3.jpg", "name 4.jpg"
-        var match = imagePath.match(/^(.+)\s+(\d+)(\.[a-zA-Z0-9]+)$/);
+        if (imagePath.indexOf('images/bags/') === 0) {
+            imagePath = imagePath.replace(/\/([^/]+)$/, function (_, name) {
+                return '/' + name.replace(/%20/gi, '-').replace(/\s+/g, '-');
+            });
+        }
+        var match = imagePath.match(/^(.+)-(\d+)(\-?\.[a-zA-Z0-9]+)$/);
         if (match) {
             var base = match[1], num = parseInt(match[2], 10), ext = match[3], out = [];
-            for (var i = num + 1; i <= num + 3; i++) out.push(base + ' ' + i + ext);
+            out.push(base + '-' + (num + 1) + ext);
+            out.push(base + '-' + (num + 2) + ext);
             return out;
         }
-        // "folder/1.jpg" -> "folder/2.jpg", etc.
         var matchNum = imagePath.match(/^(.+\/)(\d+)(\.[a-zA-Z0-9]+)$/);
         if (matchNum) {
-            var basePath = matchNum[1], num = parseInt(matchNum[2], 10), ext = matchNum[3], out = [];
-            for (var i = num + 1; i <= num + 3; i++) out.push(basePath + i + ext);
-            return out;
+            var basePath = matchNum[1], n = parseInt(matchNum[2], 10), ext2 = matchNum[3], o = [];
+            for (var j = n + 1; j <= n + 3; j++) o.push(basePath + j + ext2);
+            return o;
+        }
+        var matchSpace = imagePath.match(/^(.+)\s+(\d+)(\.[a-zA-Z0-9]+)$/);
+        if (matchSpace) {
+            var b = matchSpace[1], n2 = parseInt(matchSpace[2], 10), ex = matchSpace[3], o2 = [];
+            for (var k = n2 + 1; k <= n2 + 2; k++) o2.push(b + ' ' + k + ex);
+            return o2;
         }
         return [];
     };

@@ -27,6 +27,11 @@ if (typeof window !== 'undefined') { window.assetUrl = assetUrl; window.getBaseU
 // and: "images/bags/miu-miu-1.jpg" -> "...-2.jpg", "...-3.jpg", "...-4.jpg"
 function getHoverImagePaths(imagePath) {
     if (!imagePath || typeof imagePath !== 'string' || imagePath.indexOf('http') === 0) return [];
+    if (imagePath.indexOf('images/bags/') === 0) {
+        imagePath = imagePath.replace(/\/([^/]+)$/, function (_, name) {
+            return '/' + name.replace(/%20/gi, '-').replace(/\s+/g, '-');
+        });
+    }
     // Pattern: path ending with "-N.jpg" or "-N-.jpg" (hyphenated filenames for GitHub Pages)
     var match = imagePath.match(/^(.+)-(\d+)(\-?\.[a-zA-Z0-9]+)$/);
     if (match) {
@@ -3628,6 +3633,7 @@ function shareProduct(productName, productImage, platform) {
 
 // Make functions globally available
 if (typeof window !== 'undefined') {
+    window.getHoverImagePaths = getHoverImagePaths;
     window.filterProducts = filterProducts;
     window.searchProducts = searchProducts;
     window.mobileSearchSubmit = mobileSearchSubmit;

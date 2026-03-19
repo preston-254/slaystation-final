@@ -160,8 +160,10 @@
         });
         localStorage.setItem('slayStationCart', JSON.stringify(cart));
         if (cart.length === 0) {
-            document.getElementById('checkoutEmpty').style.display = 'block';
-            document.getElementById('checkoutContent').style.display = 'none';
+            var emptyEl = document.getElementById('checkoutEmpty');
+            var contentEl = document.getElementById('checkoutContent');
+            if (emptyEl) emptyEl.style.display = 'block';
+            if (contentEl) contentEl.style.display = 'none';
             return;
         }
         renderSummary();
@@ -218,18 +220,22 @@
             });
         });
 
-        subtotalEl.textContent = 'KSH ' + subtotal.toLocaleString();
-        if (calculatedDeliveryFee !== null) {
-            deliveryEl.textContent = 'KSH ' + calculatedDeliveryFee.toLocaleString();
-        } else {
-            deliveryEl.textContent = 'Pin location for fee';
+        if (subtotalEl) subtotalEl.textContent = 'KSH ' + subtotal.toLocaleString();
+        if (deliveryEl) {
+            if (calculatedDeliveryFee !== null) {
+                deliveryEl.textContent = 'KSH ' + calculatedDeliveryFee.toLocaleString();
+            } else {
+                deliveryEl.textContent = 'Pin location for fee';
+            }
         }
-        totalEl.textContent = 'KSH ' + total.toLocaleString();
+        if (totalEl) totalEl.textContent = 'KSH ' + total.toLocaleString();
         if (typeof updateMpesaTotal === 'function') updateMpesaTotal();
     }
 
     function onCountryChange() {
-        var country = document.getElementById('coCountry').value;
+        var countryEl = document.getElementById('coCountry');
+        if (!countryEl) return;
+        var country = countryEl.value;
         var countySelect = document.getElementById('coCounty');
         if (!countySelect) return;
         countySelect.innerHTML = '<option value="">Select county/city</option>';
@@ -242,19 +248,25 @@
                 countySelect.appendChild(opt);
             });
         }
-        document.getElementById('checkoutMapWrap').style.display = 'none';
-        document.getElementById('coAddress').style.display = 'block';
-        document.getElementById('checkoutDeliveryMsg').style.display = 'none';
+        var mapWrap0 = document.getElementById('checkoutMapWrap');
+        var addr0 = document.getElementById('coAddress');
+        var msg0 = document.getElementById('checkoutDeliveryMsg');
+        if (mapWrap0) mapWrap0.style.display = 'none';
+        if (addr0) addr0.style.display = 'block';
+        if (msg0) msg0.style.display = 'none';
         calculatedDeliveryFee = null;
         calculatedDistance = null;
         renderSummary();
     }
 
     function onCountyChange() {
-        var county = document.getElementById('coCounty').value;
+        var countyEl = document.getElementById('coCounty');
+        if (!countyEl) return;
+        var county = countyEl.value;
         var mapWrap = document.getElementById('checkoutMapWrap');
         var addressInput = document.getElementById('coAddress');
         var msgEl = document.getElementById('checkoutDeliveryMsg');
+        if (!mapWrap || !addressInput || !msgEl) return;
 
         if (county === 'Nairobi') {
             mapWrap.style.display = 'block';
@@ -754,8 +766,10 @@
     function init() {
         loadCart();
         if (cart.length === 0) {
-            document.getElementById('checkoutEmpty').style.display = 'block';
-            document.getElementById('checkoutContent').style.display = 'none';
+            var emptyE = document.getElementById('checkoutEmpty');
+            var contentE = document.getElementById('checkoutContent');
+            if (emptyE) emptyE.style.display = 'block';
+            if (contentE) contentE.style.display = 'none';
             return;
         }
 

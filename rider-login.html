@@ -214,7 +214,19 @@
     </div>
 
     <script src="auth.js"></script>
-    <script src="rider.js"></script>
+    <script>
+    (function () {
+        var RIDER_AUTH_EMAILS = ['preston.mwendwa@riarauniversity.ac.ke', 'kangethekelvin56@gmail.com', 'prestonmugo83@gmail.com'];
+        window.authenticateRider = function (email) {
+            var e = (email || '').toLowerCase().trim();
+            if (RIDER_AUTH_EMAILS.indexOf(e) !== -1) {
+                try { localStorage.setItem('riderEmail', e); } catch (err) {}
+                return true;
+            }
+            return false;
+        };
+    })();
+    </script>
     <script>
         // Allowed rider emails - only these can login via Google
         const ALLOWED_RIDER_EMAILS = [
@@ -287,16 +299,11 @@
                     });
                 });
             }
-            if (typeof window.login === 'undefined' || typeof window.authenticateRider === 'undefined') {
-                console.error('Auth or rider functions not loaded. Please refresh the page.');
-            }
-            
-            // Initialize Google Sign-In
-            window.onload = function() {
-                // Check if Google API is loaded
+            function initRiderGoogleSignIn() {
                 if (typeof google === 'undefined' || !google.accounts) {
                     console.warn('Google Sign-In API not loaded. Showing fallback button.');
-                    document.getElementById('customGoogleBtn').style.display = 'flex';
+                    var cgb = document.getElementById('customGoogleBtn');
+                    if (cgb) cgb.style.display = 'flex';
                     return;
                 }
                 
@@ -307,8 +314,10 @@
                     // Check if Client ID is still placeholder
                     if (GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID')) {
                         console.warn('Google Client ID not configured. Please set up OAuth credentials.');
-                        document.getElementById('customGoogleBtn').style.display = 'flex';
-                        document.getElementById('googleSignInButton').innerHTML = `
+                        var cgbPh = document.getElementById('customGoogleBtn');
+                        var gBtnPh = document.getElementById('googleSignInButton');
+                        if (cgbPh) cgbPh.style.display = 'flex';
+                        if (gBtnPh) gBtnPh.innerHTML = `
                             <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 1rem; text-align: center;">
                                 <p style="margin: 0; color: #856404; font-weight: 600;">⚠️ Google Sign-In Not Configured</p>
                                 <p style="margin: 0.5rem 0 0 0; color: #856404; font-size: 0.9rem;">Please set up Google OAuth Client ID. See GOOGLE_OAUTH_SETUP.md for instructions.</p>
@@ -317,6 +326,8 @@
                         return;
                     }
                     
+                    var gBtnMount = document.getElementById('googleSignInButton');
+                    if (!gBtnMount) return;
                     google.accounts.id.initialize({
                         client_id: GOOGLE_CLIENT_ID,
                         callback: handleGoogleSignIn,
@@ -326,7 +337,7 @@
                     
                     // Render Google Sign-In button with custom styling
                     google.accounts.id.renderButton(
-                        document.getElementById('googleSignInButton'),
+                        gBtnMount,
                         {
                             theme: 'outline',
                             size: 'large',
@@ -366,9 +377,12 @@
                     });
                 } catch (error) {
                     console.error('Google Sign-In initialization error:', error);
-                    document.getElementById('customGoogleBtn').style.display = 'flex';
+                    var cgb2 = document.getElementById('customGoogleBtn');
+                    if (cgb2) cgb2.style.display = 'flex';
                 }
-            };
+            }
+            if (document.readyState === 'complete') initRiderGoogleSignIn();
+            else window.addEventListener('load', initRiderGoogleSignIn);
             
             // Also add event listener as backup
             const customGoogleBtn = document.getElementById('customGoogleBtn');
@@ -496,31 +510,20 @@
                 return;
             }
             
-            try {
-                // First, try to login using the regular auth system with rider flag
-                // Pass true as third parameter to indicate this is a rider login
-                const loginResult = window.login(email, password, true);
-                
-                if (loginResult.success) {
-                    // Verify rider access again after login
+            Promise.resolve(window.login(email, password, true)).then(function (loginResult) {
+                if (loginResult && loginResult.success) {
                     if (typeof window.authenticateRider === 'function') {
                         window.authenticateRider(email);
                     } else {
-                        // Fallback: store rider email
-                        localStorage.setItem('riderEmail', email);
+                        try { localStorage.setItem('riderEmail', email); } catch (e) {}
                     }
-                    
                     showSuccess('Welcome back! Redirecting to rider dashboard...');
-                    
-                    // Redirect to rider dashboard
-                    setTimeout(() => {
+                    setTimeout(function () {
                         window.location.href = 'rider-dashboard.html';
                     }, 1000);
                 } else {
-                    // If login fails, check if user exists but password is wrong
-                    const users = JSON.parse(localStorage.getItem('slayStationUsers') || '[]');
-                    const userExists = users.find(u => u.email === email);
-                    
+                    var users = JSON.parse(localStorage.getItem('slayStationUsers') || '[]');
+                    var userExists = users.find(function (u) { return (u.email || '').toLowerCase() === email; });
                     if (userExists) {
                         showError('Invalid password. Please try again.');
                         passwordInput.value = '';
@@ -529,16 +532,15 @@
                         showError('Account not found. Please sign up first or contact admin for access.');
                         emailInput.focus();
                     }
-                    
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Login as Rider 🏍️';
                 }
-            } catch (error) {
+            }).catch(function (error) {
                 console.error('Rider login error:', error);
                 showError('An error occurred. Please try again.');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Login as Rider 🏍️';
-            }
+            });
         }
         
         // Forgot Password Functions

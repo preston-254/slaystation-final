@@ -1205,11 +1205,17 @@
                         window.location.href = redirectParam === 'checkout' ? 'index.html#checkout' : 'index.html';
                     }, 800);
                 } else if (result && result.needsVerification && result.email) {
-                    document.getElementById('emailVerificationMessage').textContent = result.message || ('Verify your email: we sent a link to ' + result.email);
-                    document.getElementById('emailVerificationWrap').style.display = 'block';
-                    document.getElementById('emailLoginForm').style.display = 'none';
-                    document.getElementById('resendVerificationPassword').value = '';
-                    document.getElementById('resendVerificationPassword').placeholder = 'Password for ' + result.email;
+                    var evMsg = document.getElementById('emailVerificationMessage');
+                    var evWrap = document.getElementById('emailVerificationWrap');
+                    var emailForm = document.getElementById('emailLoginForm');
+                    var resendPass = document.getElementById('resendVerificationPassword');
+                    if (evMsg) evMsg.textContent = result.message || ('Verify your email: we sent a link to ' + result.email);
+                    if (evWrap) evWrap.style.display = 'block';
+                    if (emailForm) emailForm.style.display = 'none';
+                    if (resendPass) {
+                        resendPass.value = '';
+                        resendPass.placeholder = 'Password for ' + result.email;
+                    }
                     window._resendVerificationEmail = result.email;
                 } else {
                     showError(result && result.message ? result.message : 'Invalid email or password. Please try again.');
