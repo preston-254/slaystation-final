@@ -6,99 +6,12 @@
     <title>Checkout | Slay Station</title>
     <!-- Google Maps API key for location/Places autocomplete. Restrict by HTTP referrer in Google Cloud Console. -->
     <script>window.SLAYSTATION_GOOGLE_MAPS_KEY = window.SLAYSTATION_GOOGLE_MAPS_KEY || 'AIzaSyD3FItszXml6cqO1BiLTfhNfJNO4BrevE8';</script>
-    <link rel="stylesheet" href="styles.css?v=20250130">
+    <link rel="stylesheet" href="styles.css?v=20250320">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        .checkout-page { max-width: 1200px; margin: 0 auto; padding: 24px 16px 48px; }
-        .checkout-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color, #e0e0e0); }
-        .checkout-header .logo a { font-weight: 700; font-size: 1.25rem; color: var(--text-dark); text-decoration: none; }
-        .checkout-back { color: var(--text-light); text-decoration: none; font-size: 0.95rem; }
-        .checkout-back:hover { text-decoration: underline; }
-        .checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: 48px; align-items: start; }
-        @media (max-width: 900px) { .checkout-layout { grid-template-columns: 1fr; } }
-        .checkout-form-section { margin-bottom: 28px; }
-        .checkout-form-section h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 14px; color: var(--text-dark); }
-        .checkout-form .form-group { margin-bottom: 16px; }
-        .checkout-form label { display: block; font-weight: 500; margin-bottom: 6px; font-size: 0.9rem; }
-        .checkout-form input[type="text"],
-        .checkout-form input[type="email"],
-        .checkout-form input[type="tel"],
-        .checkout-form input[type="password"],
-        .checkout-form select,
-        .checkout-form textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; }
-        .checkout-form .form-row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        @media (max-width: 500px) { .checkout-form .form-row-two { grid-template-columns: 1fr; } }
-        .checkout-summary { position: sticky; top: 100px; background: var(--light-bg, #fafafa); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; }
-        .checkout-summary h2 { font-size: 1.1rem; margin-bottom: 16px; }
-        .checkout-summary-items { max-height: 240px; overflow-y: auto; margin-bottom: 16px; }
-        .checkout-summary-item { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        .checkout-summary-item img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; }
-        /* Order summary items styled like bags cart */
-        .checkout-summary-items .cart-item { margin-bottom: 0.5rem; padding: 0.75rem; background: #f8f8f8; border: 1px solid #eee; border-radius: 8px; }
-        .checkout-summary-items .cart-item-image { width: 72px; height: 72px; flex-shrink: 0; background: #f0f0f0; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .checkout-summary-items .cart-item-image img { width: 100%; height: 100%; object-fit: contain; }
-        .checkout-summary-items .cart-item-name { font-weight: 600; margin-bottom: 0.25rem; font-size: 0.9rem; }
-        .checkout-summary-items .cart-item-price { color: var(--primary-pink, #e91e8c); font-weight: 600; font-size: 0.9rem; }
-        .checkout-summary-items .remove-from-cart-btn { margin-top: 0.5rem; padding: 4px 10px; font-size: 0.8rem; background: #fff; border: 1px solid #ddd; color: #666; border-radius: 6px; cursor: pointer; }
-        .checkout-summary-items .remove-from-cart-btn:hover { background: #fee; border-color: #fcc; color: #c00; }
-        .checkout-summary-line { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; }
-        .checkout-summary-total { font-weight: 700; font-size: 1.15rem; padding-top: 12px; margin-top: 12px; border-top: 2px solid #ddd; }
-        .checkout-map-wrap { margin-top: 10px; margin-bottom: 10px; }
-        #checkoutMapPicker { height: 280px; width: 100%; border-radius: 10px; border: 1px solid var(--border-color); }
-        .checkout-delivery-msg { padding: 12px; border-radius: 8px; font-size: 0.9rem; margin-top: 10px; }
-        .checkout-delivery-msg.nairobi { background: #E3F2FD; color: #1565C0; border-left: 4px solid #1976D2; }
-        .checkout-delivery-msg.other { background: #FFF3E0; color: #E65100; border-left: 4px solid #FF9800; }
-        .payment-option { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; cursor: pointer; }
-        .payment-option:hover { border-color: #999; }
-        .payment-option.selected { border-color: #000; background: #f9f9f9; }
-        .payment-option input { margin: 0; }
-        .card-fields { margin-top: 16px; padding: 16px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
-        .card-fields .form-row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card-logos { display: flex; gap: 8px; margin-top: 8px; }
-        .card-logos img { height: 24px; }
-        .input-with-icon { position: relative; }
-        .input-with-icon .icon-right { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #666; cursor: help; }
-        .btn-place-order { width: 100%; padding: 14px 24px; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 20px; }
-        .btn-place-order:hover { background: #333; }
-        .btn-place-order:disabled { opacity: 0.6; cursor: not-allowed; }
-        .location-suggestions { position: absolute; left: 0; right: 0; top: 100%; margin-top: 4px; max-height: 220px; overflow-y: auto; background: #fff; border: 1px solid var(--border-color, #e0e0e0); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; }
-        .location-suggestions .location-suggestion { padding: 10px 12px; cursor: pointer; font-size: 0.95rem; border-bottom: 1px solid #f0f0f0; }
-        .location-suggestions .location-suggestion:last-child { border-bottom: none; }
-        .location-suggestions .location-suggestion:hover { background: #f5f5f5; }
-        .location-suggestions .location-suggestion-tip { cursor: default; }
-        .location-suggestions .location-suggestion-tip:hover { background: #fff; }
-        .location-suggestions .location-suggestion-use-custom { color: var(--primary-pink, #e91e8c); }
-        .checkout-summary-item { position: relative; }
-        .checkout-summary-item .remove-from-cart-btn { margin-left: auto; padding: 4px 10px; font-size: 0.8rem; background: #fff; border: 1px solid #ddd; color: #666; border-radius: 6px; cursor: pointer; white-space: nowrap; }
-        .checkout-summary-item .remove-from-cart-btn:hover { background: #fee; border-color: #fcc; color: #c00; }
-        .empty-checkout { text-align: center; padding: 48px 24px; }
-        .empty-checkout a { color: #1976D2; text-decoration: none; font-weight: 600; }
-        /* Checkout page: header below promo bar and content clearance */
-        body.page-checkout { padding-top: 0; }
-        body.page-checkout .navbar { top: 40px; left: 0; right: 0; }
-        body.page-checkout .checkout-page { padding-top: 140px; }
-        body.page-checkout .nav-container { max-width: 1200px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
-        body.page-checkout .nav-menu-drawer { position: absolute; left: 0; right: 0; top: 100%; background: #fff; border-top: 1px solid #e8e8e8; display: none; padding: 1rem; }
-        body.page-checkout .nav-menu-drawer.active { display: block; }
-        body.page-checkout .nav-menu { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
-        body.page-checkout .nav-menu a { color: #1a1a1a; text-decoration: none; font-size: 0.95rem; }
-        body.page-checkout .nav-menu a:hover { text-decoration: underline; }
-        body.page-checkout .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
-        body.page-checkout .checkout-back-link { display: inline-flex; align-items: center; padding: 0.5rem 1rem !important; font-size: 0.9rem !important; color: #1a1a1a !important; text-decoration: none !important; border: 1px solid #e0e0e0; border-radius: 8px; }
-        body.page-checkout .checkout-back-link:hover { background: #f5f5f5; text-decoration: none !important; }
-        @media (min-width: 769px) {
-            body.page-checkout .nav-mobile-left { display: none; }
-            body.page-checkout .nav-menu-drawer { position: static; display: block !important; border: none; padding: 0; background: transparent; }
-            body.page-checkout .nav-menu { justify-content: center; }
-        }
-        @media (max-width: 768px) {
-            body.page-checkout .checkout-page { padding-top: 120px; }
-        }
-    </style>
 </head>
 <body class="page-checkout">
     <!-- Site promo bar -->
@@ -113,15 +26,15 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-mobile-left">
-                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+                <button class="mobile-menu-toggle" id="checkoutMobileMenuToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
             </div>
             <div class="nav-logo-wrap">
                 <div class="logo">
                     <a href="index.html" class="logo-link"><span class="logo-text">Slay Station</span></a>
                 </div>
             </div>
-            <div class="nav-menu-drawer" id="navMenuDrawer">
-                <ul class="nav-menu" id="navMenu">
+            <div class="nav-menu-drawer" id="checkoutNavMenuDrawer">
+                <ul class="nav-menu" id="checkoutNavMenu">
                     <li><a href="index.html#home">New Arrivals</a></li>
                     <li><a href="index.html#products">Bags</a></li>
                     <li><a href="wallets.html">Wallets</a></li>
@@ -134,18 +47,18 @@
             </div>
             <div class="nav-actions">
                 <a href="index.html" class="nav-btn-round nav-btn-user" title="Home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></a>
-                <a href="index.html" class="checkout-back-link" style="padding: 0.5rem 1rem; font-size: 0.9rem; color: #1a1a1a; text-decoration: none;">← Cart</a>
+                <a href="index.html" class="checkout-back-link">← Cart</a>
             </div>
         </div>
     </nav>
 
     <div class="checkout-page">
         <header class="checkout-header">
-            <h1 class="checkout-page-title" style="margin: 0; font-size: 1.5rem;">Checkout</h1>
+            <h1 class="checkout-page-title">Checkout</h1>
             <a href="index.html" class="checkout-back">← Continue shopping</a>
         </header>
 
-        <div id="checkoutEmpty" class="empty-checkout" style="display: none;">
+        <div id="checkoutEmpty" class="empty-checkout">
             <p>Your cart is empty.</p>
             <p><a href="index.html">Return to shop</a></p>
         </div>
@@ -184,19 +97,19 @@
                         </div>
                         <div class="form-group">
                             <label for="coLocation">Location (town, city, area or landmark) *</label>
-                            <div class="location-input-wrap" style="position: relative;">
+                            <div class="location-input-wrap">
                                 <input type="text" id="coLocation" name="location" required placeholder="Type your area, apartment name or address" autocomplete="off">
-                                <div id="coLocationSuggestions" class="location-suggestions" role="listbox" aria-label="Location suggestions" style="display: none;"></div>
+                                <div id="coLocationSuggestions" class="location-suggestions" role="listbox" aria-label="Location suggestions"></div>
                             </div>
-                            <p id="coLocationTip" class="location-tip" style="display: none; margin: 6px 0 0; font-size: 0.8rem; color: #666;">Tip: For apartment and business name search, add your Google Maps API key in checkout.html (search for SLAYSTATION_GOOGLE_MAPS_KEY).</p>
+                            <p id="coLocationTip" class="location-tip">Tip: For apartment and business name search, add your Google Maps API key in checkout.html (search for SLAYSTATION_GOOGLE_MAPS_KEY).</p>
                         </div>
                         <div class="form-group">
                             <label for="coAddress">Delivery Address *</label>
                             <div id="checkoutMapWrap" class="checkout-map-wrap">
-                                <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">Pin your exact location on the map (Nairobi).</p>
+                                <p class="checkout-map-hint">Pin your exact location on the map (Nairobi).</p>
                                 <div id="checkoutMapPicker"></div>
                             </div>
-                            <textarea id="coAddress" name="address" rows="3" placeholder="Street, area, landmark (or pin on map for Nairobi)" style="display: none;"></textarea>
+                            <textarea id="coAddress" name="address" rows="3" placeholder="Street, area, landmark (or pin on map for Nairobi)"></textarea>
                             <div id="checkoutDeliveryMsg" class="checkout-delivery-msg nairobi">Pin your exact delivery location on the map. Delivery fee is calculated from Westlands Market.</div>
                         </div>
                     </section>
@@ -206,10 +119,10 @@
                         <label class="payment-option selected">
                             <input type="radio" name="payment" value="mpesa" checked> M-Pesa (Till 3193269)
                         </label>
-                        <p style="margin: 0.5rem 0 1rem 0; padding: 1rem; background: #E3F2FD; border-radius: 10px; border-left: 4px solid #2196F3; font-size: 0.9rem; color: #1565C0;">
+                        <p class="checkout-mpesa-note">
                             Pay to <strong>Till number 3193269</strong>. After you place the order you’ll see your unique reference and can paste your M-Pesa confirmation code there.
                         </p>
-                        <div id="cardFields" class="card-fields" style="display: none;">
+                        <div id="cardFields" class="card-fields">
                             <div class="form-group">
                                 <label>Card Number</label>
                                 <div class="input-with-icon">
@@ -217,8 +130,8 @@
                                     <span class="icon-right" title="Secure">🔒</span>
                                 </div>
                                 <div class="card-logos">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" style="height:20px">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" alt="Amex" style="height:20px">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" alt="Amex">
                                 </div>
                             </div>
                             <div class="form-row-two">
@@ -249,7 +162,7 @@
                 <div class="checkout-summary-line"><span>Subtotal</span><span id="checkoutSubtotal">KSH 0</span></div>
                 <div class="checkout-summary-line"><span>Delivery</span><span id="checkoutDeliveryFee">—</span></div>
                 <div class="checkout-summary-line checkout-summary-total"><span>Total</span><span id="checkoutTotal">KSH 0</span></div>
-                <button type="button" id="btnPlaceOrder" class="btn-place-order">Place Order</button>
+                <button type="button" id="checkoutBtnPlaceOrder" class="btn-place-order">Place Order</button>
             </aside>
         </div>
     </div>
@@ -261,8 +174,8 @@
                 <div class="footer-left">
                     <h3>Join Our Circle</h3>
                     <div class="footer-newsletter">
-                        <input type="email" id="footerEmail" placeholder="Email" aria-label="Email">
-                        <button type="button" onclick="var e=document.getElementById('footerEmail');if(e&&e.value){alert('Thanks for signing up!');e.value='';}else{alert('Please enter your email.');}" aria-label="Subscribe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                        <input type="email" id="footerEmailCheckout" placeholder="Email" aria-label="Email">
+                        <button type="button" onclick="var e=document.getElementById('footerEmailCheckout');if(e&&e.value){alert('Thanks for signing up!');e.value='';}else{alert('Please enter your email.');}" aria-label="Subscribe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
                     </div>
                     <h3>Follow Us</h3>
                     <div class="footer-social-row">
@@ -345,11 +258,11 @@
     <script src="delivery-fee-calculator.js"></script>
     <script src="checkout.js"></script>
     <script>
-        // Mobile menu toggle (same as index – uses navMenuDrawer so drawer slides in)
+        // Mobile menu toggle (checkout-scoped IDs)
         (function() {
-            var mobileMenuToggle = document.getElementById('mobileMenuToggle');
-            var navMenu = document.getElementById('navMenu');
-            var navMenuDrawer = document.getElementById('navMenuDrawer');
+            var mobileMenuToggle = document.getElementById('checkoutMobileMenuToggle');
+            var navMenu = document.getElementById('checkoutNavMenu');
+            var navMenuDrawer = document.getElementById('checkoutNavMenuDrawer');
             var menuPanel = navMenuDrawer || navMenu;
             if (mobileMenuToggle && navMenu && menuPanel) {
                 function closeMenu() {

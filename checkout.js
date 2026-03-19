@@ -162,8 +162,8 @@
         if (cart.length === 0) {
             var emptyEl = document.getElementById('checkoutEmpty');
             var contentEl = document.getElementById('checkoutContent');
-            if (emptyEl) emptyEl.style.display = 'block';
-            if (contentEl) contentEl.style.display = 'none';
+            if (emptyEl) emptyEl.classList.add('checkout-empty-visible');
+            if (contentEl) contentEl.classList.add('checkout-content-hidden');
             return;
         }
         renderSummary();
@@ -768,8 +768,8 @@
         if (cart.length === 0) {
             var emptyE = document.getElementById('checkoutEmpty');
             var contentE = document.getElementById('checkoutContent');
-            if (emptyE) emptyE.style.display = 'block';
-            if (contentE) contentE.style.display = 'none';
+            if (emptyE) emptyE.classList.add('checkout-empty-visible');
+            if (contentE) contentE.classList.add('checkout-content-hidden');
             return;
         }
 
@@ -783,7 +783,7 @@
         if (mapWrap && mapWrap.style) mapWrap.style.display = 'block';
         if (!mapInitialized) setTimeout(function() { initCheckoutMap(); }, 150);
 
-        var btn = document.getElementById('btnPlaceOrder');
+        var btn = document.getElementById('checkoutBtnPlaceOrder');
         if (btn) btn.addEventListener('click', placeOrder);
 
         var user = null;
